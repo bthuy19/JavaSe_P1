@@ -190,21 +190,32 @@ public class StudentService {
     public void processBlackFridayFile(String filePath) {
         System.out.println("\n--- ĐỌC FILE ƯU ĐÃI (BLACK FRIDAY LOGIC) ---");
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            // Bước 1: Đọc 1 dòng duy nhất từ file vì tất cả các con số nằm trên cùng 1 hàng
             String line = br.readLine();
             if (line != null && !line.trim().isEmpty()) {
+                // Tách dòng chữ thành mảng các con số, cách nhau bởi dấu phẩy
                 String[] newDiscounts = line.split(",");
                 
-                // Giả định áp dụng ưu đãi theo thứ tự danh sách học viên hiện tại
+                // Bước 2: Ghép nối dữ liệu (Mapping) theo thứ tự danh sách học viên
+                // Dùng Math.min để phòng trường hợp độ dài 2 danh sách lệch nhau, tránh lỗi tràn mảng
                 for (int i = 0; i < Math.min(studentList.size(), newDiscounts.length); i++) {
-                    Student currentStudent = studentList.get(i);
-                    double newDiscount = Double.parseDouble(newDiscounts[i].trim());
+                    Student currentStudent = studentList.get(i); // Trích xuất học viên thứ i
+                    double newDiscount = Double.parseDouble(newDiscounts[i].trim()); // Ép kiểu số thập phân cho mức ưu đãi
                     
-                    // Điều kiện: Ưu đãi mới lớn hơn ưu đãi hiện tại (Tương đương Giá mới < Giá cũ)
+                    // Bước 3: Đặt điều kiện so sánh (Business Logic)
+                    // Chỉ cập nhật nếu mức ưu đãi mới tốt hơn mức hiện tại (Tương đương giá mới rẻ hơn giá cũ)
                     if (newDiscount > currentStudent.getDiscountPercentage()) {
+                        
+                        // Bước 4: Thực thi Cập nhật "Kép"
+                        
+                        // 4.1 Cập nhật xuống Database để lưu trữ vĩnh viễn (lệnh UPDATE SQL)
                         studentDAO.updateBlackFridayDiscount(currentStudent.getStudentId(), newDiscount);
                         
+                        // 4.2 Cập nhật trực tiếp Object đang sống trên bộ nhớ RAM
+                        // Nếu thiếu bước này, code đoạn sau in ra màn hình sẽ bị sai lệch số liệu
                         currentStudent.setDiscountPercentage(newDiscount);
-                        currentStudent.setIsDiscounted(1);
+                        currentStudent.setIsDiscounted(1); // Set cờ ưu đãi (từ 0 lên 1)
+                        
                         System.out.println("Đã update ưu đãi Black Friday (" + newDiscount + "%) cho HV: " + currentStudent.getStudentId());
                     } else {
                         System.out.println("Ưu đãi mới nhỏ hơn hoặc bằng hiện tại. Bỏ qua HV: " + currentStudent.getStudentId());
