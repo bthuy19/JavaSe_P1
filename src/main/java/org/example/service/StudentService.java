@@ -151,6 +151,8 @@ public class StudentService {
                 .forEach(Student::showStudentInfo);
     }
 
+    /*
+    // Yêu cầu ưu đãi (cũ)
     public void processDiscountFile(String filePath) {
         System.out.println("\n--- ĐỌC FILE ƯU ĐÃI ---");
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -180,6 +182,37 @@ public class StudentService {
             }
         } catch (Exception e) {
             System.err.println("Không thể đọc file ưu đãi !!!");
+        }
+    }
+    */
+
+    // Thay đổi như Black Friday
+    public void processBlackFridayFile(String filePath) {
+        System.out.println("\n--- ĐỌC FILE ƯU ĐÃI (BLACK FRIDAY LOGIC) ---");
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line = br.readLine();
+            if (line != null && !line.trim().isEmpty()) {
+                String[] newDiscounts = line.split(",");
+                
+                // Giả định áp dụng ưu đãi theo thứ tự danh sách học viên hiện tại
+                for (int i = 0; i < Math.min(studentList.size(), newDiscounts.length); i++) {
+                    Student currentStudent = studentList.get(i);
+                    double newDiscount = Double.parseDouble(newDiscounts[i].trim());
+                    
+                    // Điều kiện: Ưu đãi mới lớn hơn ưu đãi hiện tại (Tương đương Giá mới < Giá cũ)
+                    if (newDiscount > currentStudent.getDiscountPercentage()) {
+                        studentDAO.updateBlackFridayDiscount(currentStudent.getStudentId(), newDiscount);
+                        
+                        currentStudent.setDiscountPercentage(newDiscount);
+                        currentStudent.setIsDiscounted(1);
+                        System.out.println("Đã update ưu đãi Black Friday (" + newDiscount + "%) cho HV: " + currentStudent.getStudentId());
+                    } else {
+                        System.out.println("Ưu đãi mới nhỏ hơn hoặc bằng hiện tại. Bỏ qua HV: " + currentStudent.getStudentId());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi đọc file ưu đãi Black Friday!");
         }
     }
 }

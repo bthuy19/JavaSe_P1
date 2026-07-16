@@ -16,8 +16,8 @@ public class StudentDAO {
 
     public void insertStudent(Student student) throws SQLException{
         String sql = "INSERT INTO students (student_id, full_name, date_of_birth, phone_number, enrollment_date, " +
-                "student_type, course_end_date, final_project_score, internship_start_date, graduation_date, gpa, discount_percentage) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "student_type, course_end_date, final_project_score, internship_start_date, graduation_date, gpa, discount_percentage, is_discounted) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try(Connection conn = DriverManager.getConnection(URL,USER, PASSWORD);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -45,6 +45,7 @@ public class StudentDAO {
                 pstmt.setDouble(11, lts.getGpa());
             }
             pstmt.setDouble(12, student.getDiscountPercentage());
+            pstmt.setInt(13, student.getIsDiscounted());
             pstmt.executeUpdate();
 
         }
@@ -59,6 +60,16 @@ public class StudentDAO {
             pstmt.setString(2, studentId);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
+        }
+    }
+
+    public void updateBlackFridayDiscount(String studentId, double newDiscount) throws SQLException {
+        String sql = "UPDATE students SET discount_percentage = ?, is_discounted = 1 WHERE student_id = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDouble(1, newDiscount);
+            pstmt.setString(2, studentId);
+            pstmt.executeUpdate();
         }
     }
 }

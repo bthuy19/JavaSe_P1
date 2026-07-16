@@ -10,6 +10,8 @@ public abstract class Student {
     private String phoneNumber;
     private LocalDate enrollmentDate;
     private double discountPercentage = 0;
+    private int isDiscounted = 0; // Cờ đánh dấu đã áp dụng ưu đãi (0 hoặc 1)
+
 
     protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -72,5 +74,13 @@ public abstract class Student {
 
     public void setDiscountPercentage(double discountPercentage) {
         this.discountPercentage = discountPercentage;
+    }
+
+    public int getIsDiscounted() {
+        return isDiscounted;
+    }
+
+    public void setIsDiscounted(int isDiscounted) {
+        this.isDiscounted = isDiscounted;
     }
 }

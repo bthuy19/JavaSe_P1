@@ -44,7 +44,8 @@ public class Main {
                 service.displaySortedStudents();
 
                 // --- Chạy Yêu cầu 5: Mở rộng DB & Cập nhật file ưu đãi ---
-                service.processDiscountFile("uudai.txt");
+                // service.processDiscountFile("uudai.txt"); // Đã comment theo yêu cầu cũ
+                service.processBlackFridayFile("uudai.txt"); // Logic Black Friday mới
 
                 // --- Chạy Yêu cầu 4.1 ---
                 try (Scanner scanner = new Scanner(System.in)) {
